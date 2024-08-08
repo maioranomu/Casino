@@ -1,5 +1,7 @@
 import random, time, os, pygame, sys
 pygame.init()
+clock = pygame.time.Clock()
+font = pygame.font.SysFont(None, 55)
 width = 600
 height = 600
 
@@ -46,8 +48,8 @@ poweroff_rect.topleft = (width / 2 - 25, 450)
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("MuhBet")
 running = True
-
-power = "on"
+multi = 0.0
+power = "off"
 display = "menu"
 while running:
     for event in pygame.event.get():
@@ -62,19 +64,18 @@ while running:
                     display = "menu"
                     power = "off"
             if rocket_button_rect.collidepoint(mouse_pos):
-                display = "rocket"
+                if display == "menu":
+                    display = "rocket"
             if double_button_rect.collidepoint(mouse_pos):
-                display = "double"
+                if display == "menu":
+                    display = "double"
             if power == "on":
                 if poweroff_rect.collidepoint(mouse_pos):
                     power = "off"
-                    print("off")
 
             elif power == "off":
                 if poweron_rect.collidepoint(mouse_pos):
                     power = "on"
-                    print("on")
-
 
     if display == "menu":
         screen.fill((0, 0, 255))
@@ -90,10 +91,14 @@ while running:
         screen.blit(img_cash, (20, 70))
         screen.blit(img_rocket, (250, 100))
         if power == "off":
+            multi = 0.0
             screen.blit(img_poweron, poweron_rect.topleft)
         elif power == "on":
             screen.blit(img_poweroff, poweroff_rect.topleft)
-        pygame.display.flip()
+            elapsed_time = clock.tick(1000)
+            multi += 0.1 * elapsed_time
+            multi_surface = font.render(f"{multi:.1f}", True, (255, 255, 255))
+            screen.blit(multi_surface, (width // 2 - 50, height // 2 + 50))
 
     elif display == "double":
         print("double")
